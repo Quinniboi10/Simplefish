@@ -36,6 +36,7 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+
 Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
                      const Position&                pos,
                      Eval::NNUE::AccumulatorCaches& caches,
@@ -43,15 +44,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     assert(!pos.checkers());
 
-    int vv =  pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK)
-            + (pos.count<BISHOP>(WHITE) - pos.count<BISHOP>(BLACK)) * 3
-            + (pos.count<KNIGHT>(WHITE) - pos.count<KNIGHT>(BLACK)) * 3
-            + (pos.count<ROOK>(WHITE) - pos.count<ROOK>(BLACK)) * 5
-            + (pos.count<QUEEN>(WHITE) - pos.count<QUEEN>(BLACK)) * 9;
-
-    vv *= PawnValueEg;
-
-    vv += Value(2 * (pos.this_thread()->nodes & 3) - 3);
+    vv = PawnValue * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK))
+         + (pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK))
     
     
     return  Value(pos.side_to_move() == WHITE ? vv : -vv);
